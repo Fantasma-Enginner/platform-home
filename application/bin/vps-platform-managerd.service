@@ -1,0 +1,10 @@
+[Unit]
+Description=Vial+ Platform Home and module integration management Service.
+After=syslog.target
+
+[Service]
+ExecStart=/opt/vps/platform-manager/bin/platform-manager.jar
+SuccessExitStatus=TEMPFAIL 250 SIGKILL
+
+[Install]
+WantedBy=multi-user.target

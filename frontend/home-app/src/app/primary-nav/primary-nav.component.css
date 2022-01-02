@@ -1,0 +1,118 @@
+.imgUser{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #284e2e;
+    display: inline-block;
+}
+.imgUser:hover{
+    border: 3px solid rgb(193, 193, 193);
+}
+.white {
+    position: relative;
+    z-index: 4;
+    background-color: white;
+    color: #282A35;
+    padding-left: 12px;
+    padding-right: 16px;
+}
+.black{
+    position: relative;
+    z-index: 2;
+    background-color: #282A35;
+    color: #f1f1f1;
+    width: 100%;
+}
+.nameUser{
+    float: left;
+    color: #000;
+    font-size: 13px;
+    text-align: right;
+    margin: 4px 10px;
+}
+.nav-link{
+    padding: 0px!important;
+}
+/*-------------------MENU-------------------*/
+.sidebar{
+    background: rgb(12,73,54);
+    background: linear-gradient(0deg, rgba(12,73,54,1) 0%, rgba(25,124,93,1) 100%);
+    color: #fff;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    top: 0;
+    z-index: -10;
+    padding: 0px; 
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+.subnav-content {
+    position: absolute;
+    top: 40px;
+    padding: 0px; 
+    left: 10px;
+}
+.subnav-content li{
+    padding: 7px 10px;
+    text-decoration: none;
+}
+.subnavbtn, .subnav-content{
+    cursor: pointer!important;
+}
+.subnav{
+    float: left!important;
+}
+.subnav-content li:hover {
+    background: #00000040;
+    border-radius: 5px;
+}
+.subnavbtn{
+    margin: 0 10px;
+}
+ul {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.navbar-toggler {
+    border: none;
+}
+#navbarMenu{
+    display: block;
+}
+#navbarMenuResponsive{
+    display: none;
+}
+/*-------------menu rsponsive------------*/
+@media only screen and (max-width: 992px) {
+    #navbarMenu{
+        display: none;
+    }
+    #navbarMenuResponsive{
+        display: flex;
+    }
+.subnav-content {
+    background: rgba(12,73,54,1);
+    position: static;
+    margin-bottom: 10px;
+}
+.subnav{
+    float: none!important;
+}
+.sidebar{
+    display: none!important;
+}
+.subnavbtn{
+    margin: 10px;
+}
+.subnav-content li:first-child{
+    margin-top: 0px;
+}
+.subnav-content li{
+    float: left;
+    list-style: none;
+}
+ .black{
+    padding: 0 10px;
+}
+}
+

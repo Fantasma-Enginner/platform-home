@@ -1,0 +1,174 @@
+# Node.js with Angular
+# Build a Node.js project that uses Angular.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+  branches:
+    include:
+      - main
+      - us/*
+  paths:
+    exclude:
+      - CICD
+    include:
+      - frontend
+      - backend
+variables:
+  - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/us') }}: 
+    - group: PlataFormHome-dev
+  - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/us') }}: 
+    - group: PlataFormHome-dev
+  - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+    - group: PlataFormHome-dev
+
+stages:
+- stage: BuildPlatformHome
+  displayName: Build stage FrontEnd BackEnd
+  jobs:
+  - job: BuildJob
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '12.x'
+      displayName: 'Install Node.js'
+
+    - task: Npm@1
+      displayName: 'Install root-app'
+      inputs:
+        command: 'install'
+        workingDir: 'frontend/root-app'
+        customRegistry: 'useFeed'
+        customFeed: '193aea28-bf59-44f7-8801-5586babc21c0'
+    
+    - task: Npm@1
+      displayName: 'Install home-app'
+      inputs:
+        command: 'install'
+        workingDir: 'frontend/home-app'
+        customRegistry: 'useFeed'
+        customFeed: '193aea28-bf59-44f7-8801-5586babc21c0'
+        
+    - task: Npm@1
+      displayName: 'Install resources-app'
+      inputs:
+        command: 'install'
+        workingDir: 'frontend/resources-app'
+        customRegistry: 'useFeed'
+        customFeed: '193aea28-bf59-44f7-8801-5586babc21c0'
+    
+    - task: Npm@1
+      displayName: 'Build root-app'
+      inputs:
+        command: 'custom'
+        workingDir: 'frontend/root-app'
+        customCommand: 'run build'
+        customRegistry: 'useFeed'
+        customFeed: '193aea28-bf59-44f7-8801-5586babc21c0'
+    
+    - task: Npm@1
+      displayName: 'Build home-app'
+      inputs:
+        command: 'custom'
+        workingDir: 'frontend/home-app'
+        customCommand: 'run build:single-spa'
+        customRegistry: 'useFeed'
+        customFeed: '193aea28-bf59-44f7-8801-5586babc21c0'
+
+    - task: Npm@1
+      displayName: 'Build resources-app'
+      inputs:
+        command: 'custom'
+        workingDir: 'frontend/resources-app'
+        customCommand: 'run build:single-spa'
+        customRegistry: 'useFeed'
+        customFeed: '193aea28-bf59-44f7-8801-5586babc21c0'
+        
+    - task: Maven@3
+      displayName: 'Package jar'
+      inputs:
+        mavenPomFile: 'backend/manager/pom.xml'
+        options: '-DskipITs -X -Pprod'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+        javaHomeOption: 'JDKVersion'
+        mavenVersionOption: 'Default'
+        mavenAuthenticateFeed: true
+        effectivePomSkip: false
+        sonarQubeRunAnalysis: false
+    
+    - task: CopyFiles@2
+      displayName: 'Copy Service Files'
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)/application'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/dist/application'
+        OverWrite: false
+        
+    - task: CopyFiles@2
+      displayName: 'Copy Scripts'
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)/database'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/dist/application/database'
+        OverWrite: false        
+        
+    - task: CopyFiles@2
+      displayName: 'Copy Documents'
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)/docs'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/dist/docs'
+        OverWrite: false            
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/dist'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)-$(Build.BuildNumber).zip'
+        replaceExistingArchive: true
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.Repository.Name)-$(Build.BuildNumber).zip'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+      enabled: true
+
+#- stage: Deploy
+#  displayName: DeployDev
+#  condition: startsWith(variables['Build.SourceBranch'], 'refs/heads/us')
+  #dependsOn: BuildPlatformHome
+#  jobs:
+#  - deployment: BuildJob
+#    pool:
+      #vmImage: 'ubuntu-latest'
+#      name: 'Thomas-Linux'
+#      demands: 
+#      - Environment -equals Dev
+#    variables:
+#      - group: PlataFormHome-dev 
+#    environment: 'PlataFormHome-Dev'
+#    strategy:
+#      runOnce:
+#        deploy:
+#          steps:
+#          - download: current
+#            artifact: drop
+#          - task: CopyFiles@2
+#            displayName: 'Copy Files to: $(PathWildFly)'
+#            inputs:
+#              SourceFolder: '$(pipeline.workspace)/drop'
+#              Contents: PlatformManager.war
+#              TargetFolder: '$(PathWildFly)'
+#              OverWrite: true
+#          
+#          - bash: |
+                #$(PathWildFly)/bin/jboss-cli.sh -c command=':read-attribute(name=server-state)' | grep running
+#                echo 'Hello world $(PathWildFly)'
+#                ls $(PathWildFly)/standalone/deployments
+#            displayName: 'Bash Script'

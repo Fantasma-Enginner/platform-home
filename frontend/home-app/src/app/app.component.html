@@ -1,0 +1,9 @@
+<div *ngIf="isLogged(); else showLogin">
+    <home-navbar></home-navbar>
+    <router-outlet></router-outlet>
+</div>
+<ng-template #showLogin>
+    <div>
+        <home-login></home-login>
+    </div>
+</ng-template>

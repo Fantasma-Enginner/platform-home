@@ -1,0 +1,11 @@
+<service>
+  <id>VPS-platform-manager</id>
+  <name>VPS-platform-manager</name>
+  <description>This service runs manage operations for the modules for the Platform VIAL+.</description>
+  <env name="PLATFORM_MANAGER_HOME" value="%BASE%"/>
+  <executable>java</executable>
+  <arguments>-Xrs -Xmx128m -jar "%BASE%\platform-manager.jar"</arguments>
+  <log mode="roll-by-size"></log>
+  <logpath>logs</logpath>
+  <onfailure action="restart" delay="10 sec" />
+</service>

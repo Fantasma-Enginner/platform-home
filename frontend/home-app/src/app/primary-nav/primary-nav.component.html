@@ -1,0 +1,60 @@
+<div class="navbar white shadow">
+  <img [src]="logoConcessionerUrl" alt="Logo" style="max-width:160px;max-height:50px;">
+  <div class="nav-item dropdown">
+    <a class="nav-link" href="#" id="navbarUsuario" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <div class="nameUser">
+        {{ userName }}
+        <br>
+        {{ profileName }}
+      </div>
+      <span class="imgUser ml-2"></span>
+    </a>
+    <div class="dropdown-menu" aria-labelledby="navbarUsuario">
+      <!--a class="dropdown-item">Perfil</a-->
+      <a class="dropdown-item" (click)="onLogout()">Logout</a>
+    </div>
+  </div>
+</div>
+
+<!--MENU BLACK-->
+
+<div class="sidebar col-md-3 col-lg-2 d-md-block"></div>
+<nav class="navbar navbar-expand-lg navbar-dark black">
+
+  <div id="navbarMenu" class="container-fluid">
+    <div class="subnav accordion" *ngFor="let section of sections" id="menuA">
+      <ul class="navbar-nav mr-auto" id="topMenu" *ngIf="!section.isEmpty()">
+        <li class="subnavbtn nav-link collapsed" data-bs-toggle="collapse" [attr.data-bs-target]="'#'+section.name">
+          <i class={{section.icon}}></i>
+          {{section.name}}
+        </li>
+      </ul>
+      <ul class="subnav-content overflow-auto collapse" data-bs-parent="#navbarMenu" id={{section.name}} aria-labelledby="subnavbtn">
+        <li *ngFor="let app of section.apps" routerLink={{app.url}}>
+          <i class={{app.icon}}></i>{{app.name}}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="navbarMenuResponsive" class="container-fluid">
+    <a></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuB"
+      aria-controls="menuB" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="subnav collapse navbar-collapse" *ngFor="let section of sections" id="menuB">
+      <ul class="navbar-nav mr-auto" id="topMenu" *ngIf="!section.isEmpty()">
+        <li class="subnavbtn nav-link collapsed" data-bs-toggle="collapse" [attr.data-bs-target]="'#'+section.name">
+          <i class={{section.icon}}></i>
+          {{section.name}}
+        </li>
+      </ul>
+      <ul class="subnav-content overflow-auto collapse" data-bs-parent="#menuB" id={{section.name}}>
+        <li *ngFor="let app of section.apps" routerLink={{app.url}}>
+          <i class={{app.icon}}></i>{{app.name}}
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
